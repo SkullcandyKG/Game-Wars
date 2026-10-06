@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>КНАУ: Битва Факультетов</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .arena { display: flex; justify-content: space-around; align-items: flex-end; height: 70vh; margin-top: 50px; }
+        .team-bar { width: 35%; transition: height 0.1s ease; border-radius: 15px 15px 0 0; position: relative; }
+        .left-team { background: linear-gradient(to top, #0052D4, #4364F7, #6FB1FC); height: 10%; }
+        .right-team { background: linear-gradient(to top, #B22222, #FF416C, #FF4B2B); height: 10%; }
+        .score { position: absolute; top: -50px; left: 0; width: 100%; font-size: 3rem; font-weight: bold; }
+        h1 { font-size: 3.5rem; text-transform: uppercase; color: #FFD700; margin: 0; }
+        .label { font-size: 2rem; margin-top: 20px; font-weight: bold; }
+    </style>
+    <!-- Подключаем Firebase Realtime прямо из CDN -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+</head>
+<body>
+    <h1>🔥 ВЕЛИКАЯ БИТВА КАЧЕСТВА КНАУ 🔥</h1>
+    <div class="arena">
+        <div id="barLeft" class="team-bar left-team"><div id="scoreLeft" class="score">10</div><div class="label">ЛЕВАЯ СТОРОНА</div></div>
+        <div id="barRight" class="team-bar right-team"><div id="scoreRight" class="score">10</div><div class="label">ПРАВАЯ СТОРОНА</div></div>
+    </div>
+
+    <script>
+        // Тут будут ваши бесплатные ключи от Firebase (создаются за 2 минуты)
+        const firebaseConfig = { databaseURL: "https://firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('battle');
+
+        // Слушаем изменения в базе в реальном времени
+        db.on('value', (snapshot) => {
+            const data = snapshot.val() || { left: 10, right: 10 };
+            
+            // Считаем проценты для графиков
+            const total = data.left + data.right;
+            const leftPercent = Math.round((data.left / total) * 100);
+            const rightPercent = Math.round((data.right / total) * 100);
+
+            // Плавно двигаем шкалы на экранах
+            document.getElementById('barLeft').style.height = leftPercent + 'vh';
+            document.getElementById('barRight').style.height = rightPercent + 'vh';
+            
+            document.getElementById('scoreLeft').innerText = leftPercent + '%';
+            document.getElementById('scoreRight').innerText = rightPercent + '%';
+        });
+    </script>
+</body>
+</html>

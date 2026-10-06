@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТАПАЙ ЗА КНАУ!</title>
+    <style>
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .tap-btn { width: 85vw; height: 85vw; max-width: 350px; max-height: 350px; border-radius: 50%; border: none; color: white; font-size: 2.5rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 0 50px rgba(255,255,255,0.2); cursor: pointer; active { transform: scale(0.95); } }
+        .blue { background: radial-gradient(#4364F7, #0052D4); }
+        .red { background: radial-gradient(#FF416C, #B22222); }
+    </style>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+</head>
+<body>
+    <button id="tapButton" class="tap-btn">ТАПАЙ!</button>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        
+        // Определяем команду по URL (например: click.html?team=left)
+        const urlParams = new URLSearchParams(window.location.search);
+        const team = urlParams.get('team') || 'left';
+        
+        const btn = document.getElementById('tapButton');
+        btn.classList.add(team === 'left' ? 'blue' : 'red');
+
+        // При каждом тапе отправляем +1 в базу данных атомарно
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // убираем задержку тапа на смартфонах
+            firebase.database().ref('battle/' + team).transaction((currentValue) => {
+                return (currentValue || 0) + 1;
+            });
+        });
+    </script>
+</body>
+</html>
